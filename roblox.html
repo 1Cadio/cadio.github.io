@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Roblox User</title>
+    <script>
+        function getRandomRobloxUser() {
+            // Generate a random user ID
+            const randomUserId = Math.floor(Math.random() * 1500000000); // Random Roblox User ID range
+            const robloxUrl = `https://www.roblox.com/users/${randomUserId}/profile`;
+
+            // Redirect to the random user's profile
+            window.location.href = robloxUrl;
+        }
+    </script>
+</head>
+<body>
+    <h1>Click the Button to Visit a Random Roblox User!</h1>
+    <button onclick="getRandomRobloxUser()">Go to Random User</button>
+</body>
+</html>

@@ -1,17 +1,5 @@
+<style type="text/css">
 body {
-  /* Set the GIF as the background image */
-  background-image: url('path_to_your_gif.gif');
-  
-  /* Repeat the GIF in a grid */
-  background-repeat: repeat;
-
-  /* Adjust the size of each GIF in the grid */
-  background-size: 100px 100px; /* You can modify these values for larger or smaller GIFs */
-
-  /* Ensure the background covers the entire page */
-  background-attachment: fixed;
-
-  /* Optional: Set other styling properties */
-  margin: 0;
-  padding: 0;
+  cursor: url('drp.png'), auto;	
 }
+</style>

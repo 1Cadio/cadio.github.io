@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random R6 Operator Picker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Rainbow Six Siege Random Operator Picker</h1>
+    <p>Select whether you are playing as Attackers or Defenders:</p>
+
+    <div>
+        <select id="team">
+            <option value="">Select Team</option>
+            <option value="attack">Attackers</option>
+            <option value="defense">Defenders</option>
+        </select>
+    </div>
+
+    <p>Select the 4 banned operators:</p>
+
+    <div>
+        <select id="ban1">
+            <option value="">Select Operator</option>
+        </select>
+        <select id="ban2">
+            <option value="">Select Operator</option>
+        </select>
+        <select id="ban3">
+            <option value="">Select Operator</option>
+        </select>
+        <select id="ban4">
+            <option value="">Select Operator</option>
+        </select>
+    </div>
+
+    <button onclick="pickRandomOperator()">Pick Random Operator</button>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        const attackers = [
+            "Ash", "Thermite", "Twitch", "Blackbeard", "Jackal", "Zofia", 
+            "Nomad", "Gridlock", "Iana", "Ace", "Flores", "Sens"
+        ];
+
+        const defenders = [
+            "Mute", "Smoke", "Doc", "Rook", "Jäger", "Bandit", "Frost", "Valkyrie", 
+            "Caveira", "Mira", "Lesion", "Kaid", "Mozzie", "Warden", "Oryx", "Aruni", 
+            "Thunderbird", "Thorn"
+        ];
+
+        const banSelectors = ["ban1", "ban2", "ban3", "ban4"];
+        
+        function updateBannedOperators() {
+            const team = document.getElementById("team").value;
+            let operators = [];
+
+            if (team === "attack") {
+                operators = attackers;
+            } else if (team === "defense") {
+                operators = defenders;
+            }
+
+            banSelectors.forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '<option value="">Select Operator</option>';
+                operators.forEach(operator => {
+                    const option = document.createElement("option");
+                    option.value = operator;
+                    option.textContent = operator;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        document.getElementById("team").addEventListener("change", updateBannedOperators);
+
+        function pickRandomOperator() {
+            const team = document.getElementById("team").value;
+            let availableOperators = [];
+
+            if (team === "attack") {
+                availableOperators = attackers;
+            } else if (team === "defense") {
+                availableOperators = defenders;
+            } else {
+                document.getElementById("result").textContent = "Please select a team!";
+                return;
+            }
+
+            const bannedOperators = banSelectors.map(id => document.getElementById(id).value).filter(Boolean);
+            const remainingOperators = availableOperators.filter(op => !bannedOperators.includes(op));
+
+            if (remainingOperators.length === 0) {
+                document.getElementById("result").textContent = "All operators are banned!";
+                return;
+            }
+
+            const randomOperator = remainingOperators[Math.floor(Math.random() * remainingOperators.length)];
+            document.getElementById("result").textContent = `Your random operator is: ${randomOperator}`;
+        }
+    </script>
+
+</body>
+</html>

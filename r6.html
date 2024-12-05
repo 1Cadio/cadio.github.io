@@ -3,93 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random R6 Operator Picker</title>
+    <title>URL Accessibility Checker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        select, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .result {
-            margin-top: 20px;
-            font-size: 20px;
         }
     </style>
 </head>
 <body>
-
-    <h1>Rainbow Six Siege Random Operator Picker</h1>
-    <p>Select the 4 banned operators:</p>
-
-    <div>
-        <select id="ban1">
-            <option value="">Select Operator</option>
-        </select>
-        <select id="ban2">
-            <option value="">Select Operator</option>
-        </select>
-        <select id="ban3">
-            <option value="">Select Operator</option>
-        </select>
-        <select id="ban4">
-            <option value="">Select Operator</option>
-        </select>
-    </div>
-
-    <button onclick="pickRandomOperator()">Pick Random Operator</button>
-
-    <div class="result" id="result"></div>
-
+    <h1>URL Accessibility Checker</h1>
+    <button id="check-accessibility-btn">Fetch URLs and check accessibility</button>
+    <div id="results"></div>
     <script>
-        const operators = [
-            "Ash", "Thermite", "Mute", "Smoke", "Sledge", "Twitch", "Doc", "Rook", "Jäger", 
-            "Bandit", "Frost", "Buck", "Blackbeard", "Valkyrie", "Caveira", "Jackal", "Mira", 
-            "Zofia", "Lesion", "Nomad", "Kaid", "Mozzie", "Gridlock", "Warden", "Oryx", "Iana", 
-            "Ace", "Zero", "Aruni", "Thunderbird", "Flores", "Thorn", "Sens"
-        ];
+        const URL_FILE = "https://raw.githubusercontent.com/monosans/proxy-list/refs/heads/main/proxies/http.txt";
+        const RESULTS_DIV = document.getElementById('results');
+        const CHECK_BTN = document.getElementById('check-accessibility-btn');
 
-        const banSelectors = ["ban1", "ban2", "ban3", "ban4"];
-        banSelectors.forEach(id => {
-            const select = document.getElementById(id);
-            operators.forEach(operator => {
-                const option = document.createElement("option");
-                option.value = operator;
-                option.textContent = operator;
-                select.appendChild(option);
-            });
-        });
+        // Add an event listener to the button to trigger the URL check
+        CHECK_BTN.addEventListener('click', checkURLAccessibility);
 
-        function pickRandomOperator() {
-            const bannedOperators = banSelectors.map(id => document.getElementById(id).value).filter(Boolean);
-            const availableOperators = operators.filter(op => !bannedOperators.includes(op));
-
-            if (availableOperators.length === 0) {
-                document.getElementById("result").textContent = "All operators are banned!";
-                return;
+        // Define a function to fetch the URLs from the GitHub repository
+        async function fetchURLsFromGitHub() {
+            try {
+                const response = await fetch(URL_FILE);
+                const text = await response.text();
+                return text.split('\n').filter(line => line.trim() !== '' && !line.trim().startsWith('#'));
+            } catch (error) {
+                console.error('Error fetching URL list from GitHub:', error);
+                return [];
             }
+        }
 
-            const randomOperator = availableOperators[Math.floor(Math.random() * availableOperators.length)];
-            document.getElementById("result").textContent = `Your random operator is: ${randomOperator}`;
+        // Define a function to check if a URL is accessible
+        async function isURLAccessible(url) {
+            try {
+                const response = await fetch(url, { method: 'HEAD', timeout: 10000 });
+                return response.ok;
+            } catch (error) {
+                console.error('Failed to connect to', url, error);
+                return false;
+            }
+        }
+
+        // Define the main function to check URL accessibility
+        async function checkURLAccessibility() {
+            const urls = await fetchURLsFromGitHub();
+            let results = '';
+
+            for (const url of urls) {
+                const isAccessible = await isURLAccessible(url);
+                const resultText = isAccessible ? `${url} is accessible!` : `${url} seems to be blocked or inaccessible.`;
+                results += `<p>${resultText}</p>`;
+
+                // For large lists of URLs, this avoids overwhelming the UI with updates
+                RESULTS_DIV.innerHTML = results;
+            }
         }
     </script>
-
 </body>
 </html>
